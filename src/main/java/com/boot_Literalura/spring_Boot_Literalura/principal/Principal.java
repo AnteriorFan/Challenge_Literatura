@@ -20,12 +20,12 @@ import java.util.stream.Collectors;
 public class Principal {
 
     private static final String URL_BASE = "https://gutendex.com/books/";
-    private ConsumoAPI conAPI = new ConsumoAPI();
-    private ConvierteDatos conve =  new ConvierteDatos();
+    private final ConsumoAPI conAPI = new ConsumoAPI();
+    private final ConvierteDatos conve =  new ConvierteDatos();
 
-    private Scanner teclado = new Scanner(System.in);
+    private final Scanner teclado = new Scanner(System.in);
     private  List<DataLibros> dataLibros;
-    private List<Libros> libros = new ArrayList<>();
+    private final List<Libros> libros = new ArrayList<>();
     private final LibrosRepository librosRepository;
     private final AutoresRepository autoresRepository;
 
@@ -40,7 +40,7 @@ public class Principal {
 
         while(opcion != 0){
             String menu = """
-                    1 ->> Buscar libro.
+                    \n1 ->> Buscar libro.
                     2 ->> Mostrar Lista de los Libros registrados.
                     3 ->> Mostrar Lista de autores registrados.
                     4 ->> listar autores vivos en un determinado año
@@ -127,14 +127,10 @@ public class Principal {
             var json = conAPI.obtenerDatos(URL_BASE+"?search="+ tituloLibro.replace(" ", "+"));
             FirtsDoor datosBusqueda = conve.obtenerDatos(json, FirtsDoor.class);
 
-            Optional<Libros> _b = datosBusqueda.libros().stream()
-                    .filter( b-> b.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
-                    .findFirst();
-
             if (datosBusqueda != null && datosBusqueda.libros() != null && !datosBusqueda.libros().isEmpty()){
                 return datosBusqueda.libros().get(0);
             }else {
-                System.out.println("No se encontraron resultados para el anime: " + datosBusqueda);
+                System.out.println("No se encontraron resultados del libro: " + datosBusqueda);
                 return null;
             }
 
@@ -203,7 +199,7 @@ public class Principal {
     }
     private void listaDeAutores(){
         List<DataAutor> listAutores = autoresRepository.findAll();
-        listAutores.forEach(a -> System.out.println("" +
+        listAutores.forEach(a -> System.out.println(
                 "\n|[<-------------- Autor ------------->]|\n"+
                 "->> Autor: "+ a.getNombre() +
                 "\n->> Fecha de nacimiento: "+ a.getVivo() +
@@ -316,26 +312,24 @@ public class Principal {
     @Transactional
     private void nombreBuscar(){
 
-            System.out.println("\n||<> DESCUBRE LOS AUTORES QUE VIVIERON POR EL RANGO DE AÑOS <>||\n");
+            System.out.println("\n||<> AUTORES <>||");
             System.out.println("\nEscribe el nombre del autor que deseas buscar:");
             var nombre = teclado.nextLine();
 
             try {
                 List<DataAutor> autores = autoresRepository.findByNombre(nombre);
 
-                if (autores != null && !autores.isEmpty()) {
-                    System.out.println("\n||<> AUTORES ENCONTRADO <>||\n");
-                    autores.forEach(autor -> {
-                        autor.getLibros().forEach(libro -> {
-                            System.out.println("->> Nombre del Autor: " + autor.getNombre());
-                            System.out.println("->> Libro Hecho: " + libro.getTitulo());
-                            System.out.println("->> Año de Nacimiento: " + autor.getVivo());
-                            System.out.println("->> Año de Muerte: " + autor.getMuerto());
-                            System.out.println("||<> ------------------------------<>||\n");
-                        });
-                    });
+                if (!autores.isEmpty()) {
+                    System.out.println("\n||<> AUTOR ENCONTRADO <>||");
+                    autores.forEach(autor -> autor.getLibros().forEach(libro -> {
+                        System.out.println("->> Nombre del Autor: " + autor.getNombre());
+                        System.out.println("->> Libro Hecho: " + libro.getTitulo());
+                        System.out.println("->> Año de Nacimiento: " + autor.getVivo());
+                        System.out.println("->> Año de Muerte: " + autor.getMuerto());
+                        System.out.println("||<> ------------------------------<>||\n");
+                    }));
                 } else {
-                    System.out.println("No se encontraron resultados de: " + nombre);
+                    System.out.println("\nNo se encontraron resultados de: " + nombre);
                 }
 
             } catch (Exception e) {
