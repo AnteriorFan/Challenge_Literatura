@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,6 +46,7 @@ public class Principal {
                     4 ->> listar autores vivos en un determinado año
                     5 ->> Listar libros por Idioma.
                     6 ->> Top Libros más Descargados.
+                    7 ->> Buscar Autor.
                     0 ->> Salir.
                     """;
 
@@ -74,6 +74,9 @@ public class Principal {
                     case 6:
                         top10Libros();
                             break;
+                    case 7:
+                        nombreBuscar();
+                        break;
                     case 0:
                         System.out.println("Cerrando la application . . .");
                         break;
@@ -282,7 +285,11 @@ public class Principal {
         }
     }
     private void idiomas(){
-        System.out.println("Selecciona el idioma (en, es, pt): ");
+        System.out.println("\nSelecciona el idioma:" +
+                "\n Digite: " +
+                "\n en sí es Ingles " +
+                "\n es sí es Español ó" +
+                "\n pt sí es portugués");
         String idioma = teclado.nextLine();
         List<DataLibros> libros = librosRepository.findByIdiomas(idioma);
         if (libros != null && !libros.isEmpty()) {
@@ -304,5 +311,37 @@ public class Principal {
                 "\n   |-> Titulo del Libro: "+ s.getTitulo() +
                 "\n   |-> Total de Descargas: " + s.getNumeroDeDescargas()+
                 "\n|- +++++++++++++++++++++++++++++++ -|\n"));
+    }
+
+    @Transactional
+    private void nombreBuscar(){
+
+            System.out.println("\n||<> DESCUBRE LOS AUTORES QUE VIVIERON POR EL RANGO DE AÑOS <>||\n");
+            System.out.println("\nEscribe el nombre del autor que deseas buscar:");
+            var nombre = teclado.nextLine();
+
+            try {
+                List<DataAutor> autores = autoresRepository.findByNombre(nombre);
+
+                if (autores != null && !autores.isEmpty()) {
+                    System.out.println("\n||<> AUTORES ENCONTRADO <>||\n");
+                    autores.forEach(autor -> {
+                        autor.getLibros().forEach(libro -> {
+                            System.out.println("->> Nombre del Autor: " + autor.getNombre());
+                            System.out.println("->> Libro Hecho: " + libro.getTitulo());
+                            System.out.println("->> Año de Nacimiento: " + autor.getVivo());
+                            System.out.println("->> Año de Muerte: " + autor.getMuerto());
+                            System.out.println("||<> ------------------------------<>||\n");
+                        });
+                    });
+                } else {
+                    System.out.println("No se encontraron resultados de: " + nombre);
+                }
+
+            } catch (Exception e) {
+                System.out.println("Ocurrió un error al obtener los datos del autor: " + e.getMessage());
+                e.printStackTrace();
+            }
+
     }
 }

@@ -16,5 +16,7 @@ public interface AutoresRepository extends JpaRepository<DataAutor, Long> {
     @Query("SELECT a FROM DataAutor a WHERE (a.vivo >= :startYear AND a.vivo <= :endYear) OR (a.muerto >= :startYear AND a.muerto <= :endYear)")
     List<DataAutor> findAuthorsByYearRange(@Param("startYear") Integer startYear, @Param("endYear") Integer endYear);
 
+    @EntityGraph(attributePaths = "libros")
+    List<DataAutor> findByNombre(String nombre);
 
 }
