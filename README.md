@@ -1,4 +1,4 @@
-<h1 align="center" style="font-weight: 900; font-size: 40px; letter-spacing: 2px;"> Spring Boot Literatura</h1>
+<h1 align="center" style="font-weight: 900; font-size: 40px; letter-spacing: 2px; color: cadetblue;"> Spring Boot Literatura</h1>
 
 <p style="font-weight: 500; font-family: system-ui;">Este proyecto es una aplicación Java utilizando Spring Boot que permite gestionar libros y autores. 
     Incluye funcionalidades para buscar libros, listar autores y libros, y realizar búsquedas específicas por idioma.</p>
