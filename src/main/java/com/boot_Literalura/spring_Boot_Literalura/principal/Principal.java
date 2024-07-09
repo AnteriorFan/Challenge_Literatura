@@ -13,7 +13,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.swing.text.html.Option;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class Principal {
@@ -122,18 +124,26 @@ public class Principal {
             var json = conAPI.obtenerDatos(URL_BASE+"?search="+ tituloLibro.replace(" ", "+"));
             FirtsDoor datosBusqueda = conve.obtenerDatos(json, FirtsDoor.class);
 
+            Optional<Libros> _b = datosBusqueda.libros().stream()
+                    .filter( b-> b.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
+                    .findFirst();
+
             if (datosBusqueda != null && datosBusqueda.libros() != null && !datosBusqueda.libros().isEmpty()){
-                return  (Libros) datosBusqueda.libros().get(0);
+                return datosBusqueda.libros().get(0);
             }else {
                 System.out.println("No se encontraron resultados para el anime: " + datosBusqueda);
                 return null;
             }
+
+
+
 
         }catch (Exception e){
             System.out.println("Ocurrió un error al obtener los datos del libro: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
+
     }
     private void buscarLibro() {
         Libros datosBusqueda = getDatos();
@@ -146,6 +156,7 @@ public class Principal {
                 DataAutor dataAutor = new DataAutor(autor);
                 autores.add(dataAutor);
             }
+
             autoresRepository.saveAll(autores);
 
             libro.setAutores(autores);
@@ -153,6 +164,17 @@ public class Principal {
             librosRepository.save(libro);
             System.out.println(libro);
 
+
+            List<DataLibros> _final = librosRepository.findAll();
+            DoubleSummaryStatistics _h = _final.stream()
+                    .filter(h -> h.getNumeroDeDescargas() > 0)
+                    .collect(Collectors.summarizingDouble(DataLibros::getNumeroDeDescargas));
+
+            System.out.println("\n|<- Estadísticas de descargas:->|");
+            System.out.println("\n * Total de descargas: " + _h.getSum());
+            System.out.println("\n * Promedio de descargas: " + _h.getAverage());
+            System.out.println("\n * Número máximo de descargas: " + _h.getMax());
+            System.out.println("\n * Número mínimo de descargas: " + _h.getMin());
             }
     }
 

@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface LibrosRepository extends JpaRepository<DataLibros, Long> {
 
+
+
     @Query("SELECT l FROM DataLibros l LEFT JOIN FETCH l.genero")
     List<DataLibros> findAllWithGenero();
 

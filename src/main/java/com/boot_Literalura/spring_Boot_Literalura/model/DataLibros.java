@@ -55,7 +55,7 @@ public class DataLibros {
 
     @Override
     public String toString() {
-        return "\n--------------------------------------\n" +'\''+
+        return "\n--------------------------------------\n"+
                 "ID del Libro=" + id_book +
                 ",\nTitulo='" + titulo + '\'' +
                 ",\nAutor=" +  autores+
